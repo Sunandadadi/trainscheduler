@@ -14,6 +14,7 @@ The service supports two Requests:
         <li> 'name': Accepts a string value of the name of the arriving train. </li>
         <li> 'time': Accepts a list of times when the train is scheduled to arrive. Time is accepted in 12 hour format. (HH:MM AM/PM) </li>
     </ol>
+
 Example:
 ```json
 [
