@@ -9,10 +9,10 @@ python app.py
 The service supports two Requests:
 <ol>
 
-<li>'/add': This is a POST request and accepts JSON data. The data is expected to be a list of dictionaries. Each dictionary has two keys: </li>
+<li>**/add**: This is a POST request and accepts JSON data. The data is expected to be a list of dictionaries. Each dictionary has two keys: </li>
     <ol>
-        <li> 'name': Accepts a string value of the name of the arriving train. </li>
-        <li> 'time': Accepts a list of times when the train is scheduled to arrive. Time is accepted in 12 hour format. (HH:MM AM/PM) </li>
+        <li> **name**: Accepts a string value of the name of the arriving train. </li>
+        <li> **time**: Accepts a list of times when the train is scheduled to arrive. Time is accepted in 12 hour format. (HH:MM AM/PM) </li>
     </ol>
 
 Example:
@@ -29,6 +29,6 @@ Example:
 ]
 ```
 
-<li>'/fetch': This is a GET request and expects a 'time' as an input argument to fetch the next time multiple trains will arrive at the station. Similar to the previous request, time is accepted in 12 hour format. (HH:MM AM/PM) </li>
+<li>**/fetch**: This is a GET request and expects a **time** as an input argument to fetch the next time multiple trains will arrive at the station. Similar to the previous request, time is accepted in 12 hour format. (HH:MM AM/PM) </li>
 
 </ol>
