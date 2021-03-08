@@ -18,7 +18,7 @@ class TrainLine(object):
         store = Settings.DATA_STORE.keys()
         if not store:
             return -1
-        # Settings.SIMULTANEOUS_TRAIN_COUNT_THRESHOLD
+
         search_time = Utils.convert_string_datetime(data['time'])
         store_times = store.keys()
         idx = Utils.fetch_index_gte(store, store_times, search_time)
