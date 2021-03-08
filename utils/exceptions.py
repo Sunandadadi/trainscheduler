@@ -7,6 +7,15 @@ class ExpectedArguments(Exception):
     def __str__(self):
         return f"Expected {', '.join(self.expected)} as arguments. Missing keys: {', '.join(self.missing)}"
 
+class ExpectedNonEmpty(Exception):
+    def __init__(self, paramerter, paramerter_value):
+        self.paramerter = paramerter
+        self.paramerter_value = paramerter_value
+
+    def __str__(self):
+        return f"Expected not empty value for {self.paramerter} but recieved {self.paramerter_value}"
+
+
 class InvalidTypeArguments(Exception):
     def __init__(self, invalid_type):
         self.invalid_type = invalid_type

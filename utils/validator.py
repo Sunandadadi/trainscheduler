@@ -1,6 +1,7 @@
 from datetime import datetime
 
 from utils.exceptions import *
+from utils.utils import Utils
 from configuration.default import Settings
 
 class Validator(object):
@@ -32,27 +33,28 @@ class Validator(object):
 
     @staticmethod
     def validate_for_parameter_type(data, required_params):
-        # TODO: Add tests!
-        Validator.validate_dict_type(data)
+        Validator.validate_list_type(data)
         Validator.validate_dict_type(required_params)
 
         invalid_type = []
-        for key, val in required_params.items():
-            if not isinstance(key, val):
-                invalid_type.append(f"'{key}' of type: {val}")
+        for item in data:
+            for key, val in required_params.items():
+                if not isinstance(item[key], val):
+                    invalid_type.append(f"'{key}' of type: {val}")
         if invalid_type:
             raise InvalidTypeArguments(invalid_type = invalid_type)
         return
 
     @staticmethod
     def validate_for_missing_parameters(data, required_params):
-        Validator.validate_dict_type(data)
+        Validator.validate_list_type(data)
         Validator.validate_dict_type(required_params)
 
         missing = []
-        for key in required_params:
-            if data.get(key, None) is None:
-                missing.append(key)
+        for item in data:
+            for key in required_params:
+                if item.get(key, None) is None:
+                    missing.append(key)
         if missing:
             raise ExpectedArguments(expected = required_params, missing = missing)
         return
@@ -77,10 +79,17 @@ class Validator(object):
         return
 
     @staticmethod
+    def validate_times(times):
+        if not times:
+            raise ExpectedNonEmpty(paramerter = Settings.REQUEST_TIME_PARAM, paramerter_value = times)
+        list(map(lambda time: Validator.validate_time(time), times))
+
+    @staticmethod
     def validate_time(val):
+        if not val:
+            raise ExpectedNonEmpty(paramerter = Settings.REQUEST_TIME_PARAM, paramerter_value = val)
         Validator.validate_string_type(val)
-        val = val.strip().upper()
         try:
-            datetime.strptime(val, '%I:%M %p')
+            Utils.convert_string_datetime(val)
         except Exception as e:
             raise e

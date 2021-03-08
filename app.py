@@ -1,13 +1,9 @@
 from flask import Flask, jsonify, request
-import logging
 
 from utils.helper import Helper
 from configuration.default import Settings
 
 app = Flask(__name__)
-logger = logging.getLogger(__name__)
-
-# TODO: Fix logging. Add logs to file
 
 @app.route('/')
 def index():
@@ -17,17 +13,46 @@ def index():
 def add():
     try:
         data = request.json
-        logging.info(f"{request.path} called with args: {data}")
+        Settings.logger.info(f"Path: {request.path} called with args: {data}")
         a = Helper(data)
-        a.validate_add_request()
         a.add_train_data()
-        return Settings.WELCOME_TEXT
-    except Exception as e:
-        logger.error(str(e))
+        Settings.logger.info(f"Successfully Processed data: {data}")
+        return jsonify(Settings.ADD_SUCCESS_TEXT), 200
+
+    except Settings.DEFINED_EXCEPTIONS as e:
+        Settings.logger.error(str(e))
+        Settings.logger.error("Returned with status code 400")
         return jsonify(str(e)), 400
+
+    except Exception as e:
+        Settings.logger.error(str(e))
+        Settings.logger.error("Returned with status code 500")
+        return jsonify(str(e)), 500
+
+@app.route('/fetch', methods=['GET'])
+def fetch():
+    try:
+        data = request.args
+        Settings.logger.info(f"Path: {request.path} called with args: {data}")
+        a = Helper(data)
+        result = a.fetch_simultaneous_trains()
+        Settings.logger.info(f"Successfully Processed data: {data}, with return value: {result}")
+        return jsonify(result), 200
+
+    except Settings.DEFINED_EXCEPTIONS as e:
+        Settings.logger.error(str(e))
+        Settings.logger.error("Returned with status code 400")
+        return jsonify(str(e)), 400
+
+    except Exception as e:
+        Settings.logger.error(str(e))
+        Settings.logger.error("Returned with status code 500")
+        return jsonify(str(e)), 500
 
 @app.errorhandler(404)
 def page_not_found(error):
+    Settings.logger.error(f"Reached unknow path: {request.path}")
+    Settings.logger.error("Returned with status code 404")
     return jsonify('Oops! Page not found'), 404
 
 if __name__ == '__main__':

@@ -1,8 +1,5 @@
 from unittest import TestCase
-
-from utils.exceptions import *
 from utils.validator import Validator
-from configuration.default import Settings
 
 class TestAddRequest(TestCase):
 
@@ -65,10 +62,10 @@ class TestAddRequest(TestCase):
             Validator.validate_for_missing_parameters(data, required_params)
             self.assertFail()
         except Exception as err:
-            self.assertEqual(str(err), "Expected Type: <class 'dict'>")
+            self.assertEqual(str(err), "Expected Type: <class 'list'>")
 
     def test_invalid_required_params_for_validate_for_missing_parameters(self):
-        data = {}
+        data = []
         required_params = None
         try:
             Validator.validate_for_missing_parameters(data, required_params)
@@ -77,9 +74,9 @@ class TestAddRequest(TestCase):
             self.assertEqual(str(err), "Expected Type: <class 'dict'>")
 
     def test_missing_data_for_validate_for_missing_parameters(self):
-        data = {
+        data = [{
             'param1': 'something'
-        }
+        }]
         required_params = {
             'param1': str,
             'param2': str
@@ -91,9 +88,9 @@ class TestAddRequest(TestCase):
             self.assertEqual(str(err), 'Expected param1, param2 as arguments. Missing keys: param2')
 
     def test_valid_input_for_validate_for_missing_parameters(self):
-        data = {
+        data = [{
             'param1': 'testing'
-        }
+        }]
         required_params = {
             'param1': str
         }
@@ -174,7 +171,64 @@ class TestAddRequest(TestCase):
         ret = Validator.validate_alphanumeric(val, param)
         self.assertEqual(ret, None)
 
+    def test_nonetype_for_data_in_validate_for_parameter_type(self):
+        data, required_params = None, {}
+        try:
+            Validator.validate_for_parameter_type(data, required_params)
+            self.assertFail()
+        except Exception as err:
+            self.assertEqual(str(err), "Expected Type: <class 'list'>")
+
+    def test_nonetype_for_params_in_validate_for_parameter_type(self):
+        data, required_params = [], None
+        try:
+            Validator.validate_for_parameter_type(data, required_params)
+            self.assertFail()
+        except Exception as err:
+            self.assertEqual(str(err), "Expected Type: <class 'dict'>")
+
+    def test_invalid_for_validate_for_parameter_type(self):
+        data = [
+            {'param1': 'test'},
+            {'param1': 1}
+        ]
+        required_params = {
+            'param1': str
+        }
+        try:
+            Validator.validate_for_parameter_type(data, required_params)
+            self.assertFail()
+        except Exception as err:
+            self.assertEqual(str(err), "TypeError: Expected paramerter 'param1' of type: <class 'str'>")
+
+    def test_invalid_for_validate_for_parameter_type(self):
+        data = [
+            {'param1': 'test1'},
+            {'param1': 'test2'}
+        ]
+        required_params = {
+            'param1': str
+        }
+        ret = Validator.validate_for_parameter_type(data, required_params)
+        self.assertEqual(ret, None)
+
     def test_nonetype_in_validate_time(self):
-        val, param = 't12s', 'test'
-        ret = Validator.validate_alphanumeric(val, param)
+        val = None
+        try:
+            Validator.validate_time(val)
+            self.assertFail()
+        except Exception as err:
+            self.assertEqual(str(err), "Expected not empty value for time but recieved None")
+
+    def test_invalid_str_in_validate_time(self):
+        val = '12:00PM'
+        try:
+            Validator.validate_time(val)
+            self.assertFail()
+        except Exception as err:
+            self.assertEqual(str(err), "time data '12:00PM' does not match format '%I:%M %p'")
+
+    def test_invalid_str_in_validate_time(self):
+        val = '12:00 PM'
+        ret = Validator.validate_time(val)
         self.assertEqual(ret, None)
